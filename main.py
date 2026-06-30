@@ -5,7 +5,6 @@ from typing import List
 
 app = FastAPI()
 
-# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -36,14 +35,14 @@ def root():
 @app.post("/analytics")
 def analytics(
     batch: EventBatch,
-    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    x_api_key: str = Header(None),
 ):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     total_events = len(batch.events)
 
-    unique_users = len({event.user for event in batch.events})
+    unique_users = len(set(event.user for event in batch.events))
 
     revenue = sum(event.amount for event in batch.events if event.amount > 0)
 
