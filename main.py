@@ -5,10 +5,11 @@ from typing import List
 
 app = FastAPI()
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -35,7 +36,7 @@ def root():
 @app.post("/analytics")
 def analytics(
     batch: EventBatch,
-    x_api_key: str = Header(None),
+    x_api_key: str | None = Header(default=None, alias="X-API-Key"),
 ):
     if x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Unauthorized")
